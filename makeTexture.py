@@ -8,38 +8,23 @@ class Op(Enum):
     Subtract = 2
     Multiply = 3
     Divide = 4
-    Sin = 5
-    Cos = 6
-    Tan = 7
-    Sqrt = 8
-    Pow = 9
-    Exp = 10
-    Log = 11
-    Mod = 12
-    Abs = 13
+    Sine = 5
+    Cosine = 6
+    Tangent = 7
+    Square_Root = 8
+    Power = 9
+    Exponent = 10
+    Logarithm = 11
+    Truncated_Modulo = 12
+    Absolute = 13
     Sign = 14
-    Min = 15
-    Max = 16
-    Clamp = 17
+    Minimum = 15
+    Maximum = 16
     Ceil = 18
     Floor = 19
     Round = 20
-    Step = 21
-    Smoothstep = 22
-    Bias = 23
-    Gain = 24
-
-
-def bias(a, b):
-    return a**(_np.log(b) / _np.log(0.5))
-
-
-def gain(a, b):
-    return _np.where(
-        a < 0.5,
-        bias(a * 2, 1 - b) / 2,
-        1 - bias((1 - a) * 2, 1 - b) / 2
-    )
+    Less_Than = 21
+    Greater_Than = 22
 
 
 op = {
@@ -47,26 +32,23 @@ op = {
     Op.Subtract: lambda a, b: a - b,
     Op.Multiply: lambda a, b: a * b,
     Op.Divide: lambda a, b: a / b,
-    Op.Sin: lambda a, _: _np.sin(a),
-    Op.Cos: lambda a, _: _np.cos(a),
-    Op.Tan: lambda a, _: _np.tan(a),
-    Op.Sqrt: lambda a, _: _np.sqrt(a),
-    Op.Pow: lambda a, b: a ** b,
-    Op.Exp: lambda a, _: _np.exp(a),
-    Op.Log: lambda a, b: _np.log(a) / _np.log(b),
-    Op.Mod: lambda a, b: a % (_np.where(a < 0, -1, 1) * abs(b)),
-    Op.Abs: lambda a, _: _np.abs(a),
+    Op.Sine: lambda a, _: _np.sin(a),
+    Op.Cosine: lambda a, _: _np.cos(a),
+    Op.Tangent: lambda a, _: _np.tan(a),
+    Op.Square_Root: lambda a, _: _np.sqrt(a),
+    Op.Power: lambda a, b: a ** b,
+    Op.Exponent: lambda a, _: _np.exp(a),
+    Op.Logarithm: lambda a, b: _np.log(a) / _np.log(b),
+    Op.Truncated_Modulo: lambda a, b: a % (_np.where(a < 0, -1, 1) * abs(b)),
+    Op.Absolute: lambda a, _: _np.abs(a),
     Op.Sign: lambda a, _: _np.sign(a),
-    Op.Min: lambda a, b: _np.minimum(a, b),
-    Op.Max: lambda a, b: _np.maximum(a, b),
-    Op.Clamp: lambda a, _: _np.clip(a, 0, 1),
+    Op.Minimum: lambda a, b: _np.minimum(a, b),
+    Op.Maximum: lambda a, b: _np.maximum(a, b),
     Op.Ceil: lambda a, _: _np.ceil(a),
     Op.Floor: lambda a, _: _np.floor(a),
     Op.Round: lambda a, _: _np.round(a),
-    Op.Step: lambda a, b: (a <= b).astype(_np.float32),
-    Op.Smoothstep: lambda a, _: _np.clip(3 * a**2 - 2 * a**3, 0, 1),
-    Op.Bias: bias,
-    Op.Gain: gain,
+    Op.Less_Than: lambda a, b: (a < b).astype(_np.float32),
+    Op.Greater_Than: lambda a, b: (a > b).astype(_np.float32),
 }
 
 
@@ -103,7 +85,7 @@ class Node(object):
         return None
 
     def __abs__(self):
-        return MathFun(Op.Abs, self, 0)
+        return MathFun(Op.Absolute, self, 0)
 
     def __neg__(self):
         return MathFun(Op.Multiply, self, -1)
@@ -145,67 +127,67 @@ class Node(object):
         return MathFun(Op.Divide, other, self)
 
     def __pow__(self, other):
-        return MathFun(Op.Pow, self, other)
+        return MathFun(Op.Power, self, other)
 
     def __rpow__(self, other):
-        return MathFun(Op.Pow, other, self)
+        return MathFun(Op.Power, other, self)
 
     def __mod__(self, other):
-        return MathFun(Op.Mod, self, other)
+        return MathFun(Op.Truncated_Modulo, self, other)
 
     def __rmod__(self, other):
-        return MathFun(Op.Mod, other, self)
+        return MathFun(Op.Truncated_Modulo, other, self)
+
+    def __lt__(self, other):
+        return MathFun(Op.Less_Than, self, other)
+
+    def __gt__(self, other):
+        return MathFun(Op.Greater_Than, self, other)
 
     def __le__(self, other):
-        return MathFun(Op.Step, self, other)
+        return ~(self > other)
 
     def __ge__(self, other):
-        return MathFun(Op.Step, other, self)
+        return ~(self < other)
 
     def __eq__(self, other):
         return (self <= other) & (self >= other)
-
-    def __lt__(self, other):
-        return ~(self >= other)
-
-    def __gt__(self, other):
-        return ~(self <= other)
 
     def __ne__(self, other):
         return ~(self == other)
 
     def sin(self):
-        return MathFun(Op.Sin, self, 0)
+        return MathFun(Op.Sine, self, 0)
 
     def cos(self):
-        return MathFun(Op.Cos, self, 0)
+        return MathFun(Op.Cosine, self, 0)
 
     def tan(self):
-        return MathFun(Op.Tan, self, 0)
+        return MathFun(Op.Tangent, self, 0)
 
     def sqrt(self):
-        return MathFun(Op.Sqrt, self, 0)
+        return MathFun(Op.Square_Root, self, 0)
 
     def exp(self):
-        return MathFun(Op.Exp, self, 0)
+        return MathFun(Op.Exponent, self, 0)
 
     def log(self, other):
-        return MathFun(Op.Log, self, other)
+        return MathFun(Op.Logarithm, self, other)
 
     def abs(self):
-        return MathFun(Op.Abs, self, 0)
+        return MathFun(Op.Absolute, self, 0)
 
     def sign(self):
         return MathFun(Op.Sign, self, 0)
 
     def min(self, other):
-        return MathFun(Op.Min, self, other)
+        return MathFun(Op.Minimum, self, other)
 
     def max(self, other):
-        return MathFun(Op.Max, self, other)
+        return MathFun(Op.Maximum, self, other)
 
     def clamp(self):
-        return MathFun(Op.Clamp, self, 0)
+        return self.max(0).min(1)
 
     def ceil(self):
         return MathFun(Op.Ceil, self, 0)
@@ -214,13 +196,7 @@ class Node(object):
         return MathFun(Op.Floor, self, 0)
 
     def smoothstep(self):
-        return MathFun(Op.Smoothstep, self, 0)
-
-    def bias(self, other):
-        return MathFun(Op.Bias, self, other)
-
-    def gain(self, other):
-        return MathFun(Op.Gain, self, other)
+        return (3 * self**2 - 2 * self**3).clamp()
 
 
 class U(Node):

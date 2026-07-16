@@ -5,11 +5,6 @@ def rem(a, b):
     return (a % b + b) % b
 
 
-def random(x):
-    t = x.sin() * 99371
-    return t - t.floor()
-
-
 def maprange(x, from_min, from_max, to_min, to_max):
     t = (to_max - to_min) / (from_max - from_min)
     return (x - from_min) * t + to_min
