@@ -98,8 +98,8 @@ class Node(object):
     def name(self, value):
         self._name = value
 
-    def format(self):
-        return f"Node_{self.id}"
+    def to_json(self):
+        return None
 
     def __abs__(self):
         return MathFun(Op.Abs, self, 0)
@@ -234,9 +234,6 @@ class U(Node):
     def extension(self):
         return "u"
 
-    def format(self):
-        return f"U_{self.id}"
-
 
 class V(Node):
     def __init__(self, name=None, n=512):
@@ -250,9 +247,6 @@ class V(Node):
     def extension(self):
         return "v"
 
-    def format(self):
-        return f"V_{self.id}"
-
 
 class Input(Node):
     def __init__(self, val, name=None):
@@ -264,11 +258,12 @@ class Input(Node):
     def extension(self):
         return "input"
 
-    def format(self):
+    def to_json(self):
+        name = self.name
         id = self.id
-        in1 = format_input(self.input)
+        val = 1.0 if isinstance(self.input, Node) else self.input
 
-        return f"Input_{id}: input = {in1}"
+        return f'{{"type": "input", "name": "{name}", "id": {id}, "value": {val}}}'
 
 
 class MathFun(Node):
@@ -291,17 +286,12 @@ class MathFun(Node):
     def extension(self):
         return f'{self.opcode}'.replace('Op.', '')
 
-    def format(self):
+    def to_json(self):
+        name = self.name
         id = self.id
-        op = self.opcode
-        in1 = format_input(self.inputs[0])
-        in2 = format_input(self.inputs[1])
+        op = self.opcode.name
 
-        return f"MathFun_{id}: {op}, inputs = ({in1}, {in2})"
-
-
-def format_input(val):
-    return f"Node {val.id}" if isinstance(val, Node) else f"Value {val}"
+        return f'{{"type": "math", "name": "{name}", "id": {id}, "op": "{op}"}}'
 
 
 def trace_network(outputs):
@@ -338,7 +328,8 @@ if __name__ == "__main__":
     out.name = "mask"
 
     for node in trace_network([out]):
-        print(node.format())
+        if node.to_json() is not None:
+            print(node.to_json())
     print()
 
     Image.fromarray(out.data * 256).show()

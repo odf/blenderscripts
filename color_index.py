@@ -26,7 +26,7 @@ out.name = "color_index"
 
 
 for node in trace_network([out]):
-    print(node.format())
+    print(node.to_json())
 print()
 
 from PIL import Image

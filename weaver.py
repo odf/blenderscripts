@@ -98,7 +98,7 @@ output_nodes=[
 
 
 for node in trace_network(output_nodes):
-    print(node.format())
+    print(node.to_json())
 print()
 
 from PIL import Image
