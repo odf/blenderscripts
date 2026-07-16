@@ -1,4 +1,4 @@
-from makeTexture import Input, U, network_as_json
+from abstract_node_tree import Input, U, network_as_json
 
 thread_index = Input((U() * 256).floor(), "thread_index")
 
