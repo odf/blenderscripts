@@ -11,11 +11,11 @@ class Op(Enum):
     Sine = 5
     Cosine = 6
     Tangent = 7
-    Square_Root = 8
+    Sqrt = 8
     Power = 9
     Exponent = 10
     Logarithm = 11
-    Truncated_Modulo = 12
+    Modulo = 12
     Absolute = 13
     Sign = 14
     Minimum = 15
@@ -35,11 +35,11 @@ op = {
     Op.Sine: lambda a, _: _np.sin(a),
     Op.Cosine: lambda a, _: _np.cos(a),
     Op.Tangent: lambda a, _: _np.tan(a),
-    Op.Square_Root: lambda a, _: _np.sqrt(a),
+    Op.Sqrt: lambda a, _: _np.sqrt(a),
     Op.Power: lambda a, b: a ** b,
     Op.Exponent: lambda a, _: _np.exp(a),
     Op.Logarithm: lambda a, b: _np.log(a) / _np.log(b),
-    Op.Truncated_Modulo: lambda a, b: a % (_np.where(a < 0, -1, 1) * abs(b)),
+    Op.Modulo: lambda a, b: a % (_np.where(a < 0, -1, 1) * abs(b)),
     Op.Absolute: lambda a, _: _np.abs(a),
     Op.Sign: lambda a, _: _np.sign(a),
     Op.Minimum: lambda a, b: _np.minimum(a, b),
@@ -133,10 +133,10 @@ class Node(object):
         return MathFun(Op.Power, other, self)
 
     def __mod__(self, other):
-        return MathFun(Op.Truncated_Modulo, self, other)
+        return MathFun(Op.Modulo, self, other)
 
     def __rmod__(self, other):
-        return MathFun(Op.Truncated_Modulo, other, self)
+        return MathFun(Op.Modulo, other, self)
 
     def __lt__(self, other):
         return MathFun(Op.Less_Than, self, other)
@@ -166,7 +166,7 @@ class Node(object):
         return MathFun(Op.Tangent, self, 0)
 
     def sqrt(self):
-        return MathFun(Op.Square_Root, self, 0)
+        return MathFun(Op.Sqrt, self, 0)
 
     def exp(self):
         return MathFun(Op.Exponent, self, 0)
