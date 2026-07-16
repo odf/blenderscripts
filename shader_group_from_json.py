@@ -64,7 +64,7 @@ def load(path, name="Group"):
                 else:
                     links.new(source.outputs[0], node_out.inputs[k])
             elif key == "value":
-                pass
+                node_out.inputs[k].default_value = val
 
         if id in outputs:
             output_name = nodes_in_by_id[id]["name"]
