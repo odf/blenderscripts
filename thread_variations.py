@@ -1,5 +1,5 @@
 from math import pi
-from makeTexture import Input, U, V, trace_network
+from makeTexture import Input, U, V, network_as_json
 
 
 def random(x):
@@ -42,9 +42,7 @@ weft_val.name = "weft_variation"
 output_nodes=[warp_val, weft_val]
 
 
-for node in trace_network(output_nodes):
-    print(node.to_json())
-print()
+print(network_as_json(output_nodes))
 
 from PIL import Image
 Image.fromarray(warp_val.data * 256).show()

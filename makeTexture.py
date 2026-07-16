@@ -1,4 +1,5 @@
 from enum import Enum
+import json
 import numpy as _np
 
 
@@ -259,11 +260,12 @@ class Input(Node):
         return "input"
 
     def to_json(self):
-        name = self.name
-        id = self.id
-        val = 1.0 if isinstance(self.input, Node) else self.input
-
-        return f'{{"type": "input", "name": "{name}", "id": {id}, "value": {val}}}'
+        return {
+            "id": self.id,
+            "name": self.name,
+            "type": "Input",
+            "value": 1.0 if isinstance(self.input, Node) else self.input
+        }
 
 
 class MathFun(Node):
@@ -287,11 +289,18 @@ class MathFun(Node):
         return f'{self.opcode}'.replace('Op.', '')
 
     def to_json(self):
-        name = self.name
-        id = self.id
-        op = self.opcode.name
+        inputs = [
+            ["node", v.id] if isinstance(v, Node) else ["value", v]
+            for v in self.inputs
+        ]
 
-        return f'{{"type": "math", "name": "{name}", "id": {id}, "op": "{op}"}}'
+        return {
+            "id": self.id,
+            "name": self.name,
+            "type": "Math",
+            "op": self.opcode.name,
+            "inputs": inputs
+        }
 
 
 def trace_network(outputs):
@@ -317,6 +326,13 @@ def trace_network(outputs):
     return nodes
 
 
+def network_as_json(outputs):
+    nodes = [node.to_json() for node in trace_network(outputs)]
+    outputs = [node.id for node in outputs]
+
+    return json.dumps({"nodes": nodes, "outputs": outputs}, indent=2)
+
+
 if __name__ == "__main__":
     from PIL import Image
 
@@ -327,9 +343,6 @@ if __name__ == "__main__":
     out = a
     out.name = "mask"
 
-    for node in trace_network([out]):
-        if node.to_json() is not None:
-            print(node.to_json())
-    print()
+    print(network_as_json([out]))
 
     Image.fromarray(out.data * 256).show()

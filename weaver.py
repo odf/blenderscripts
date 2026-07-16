@@ -1,4 +1,4 @@
-from makeTexture import Input, U, V, trace_network
+from makeTexture import Input, U, V, network_as_json
 
 
 def rem(a, b):
@@ -97,9 +97,7 @@ output_nodes=[
 ]
 
 
-for node in trace_network(output_nodes):
-    print(node.to_json())
-print()
+print(network_as_json(output_nodes))
 
 from PIL import Image
 Image.fromarray(bump_raw.data * 256).show()

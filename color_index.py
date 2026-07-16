@@ -1,4 +1,4 @@
-from makeTexture import Input, U, trace_network
+from makeTexture import Input, U, network_as_json
 
 thread_index = Input((U() * 256).floor(), "thread_index")
 
@@ -25,9 +25,7 @@ for i, s in enumerate(starts):
 out.name = "color_index"
 
 
-for node in trace_network([out]):
-    print(node.to_json())
-print()
+print(network_as_json([out]))
 
 from PIL import Image
 Image.fromarray(out.data * 32).show()
