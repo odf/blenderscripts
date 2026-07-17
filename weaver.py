@@ -92,7 +92,7 @@ output_nodes=[
 ]
 
 
-print(network_as_json(output_nodes))
+print(network_as_json(output_nodes, name="Weaver"))
 
 from PIL import Image
 Image.fromarray(bump_raw.data * 256).show()

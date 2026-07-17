@@ -302,11 +302,18 @@ def trace_network(outputs):
     return nodes
 
 
-def network_as_json(outputs):
+def network_as_json(outputs, name="Network"):
     nodes = [node.to_json() for node in trace_network(outputs)]
     outputs = [node.id for node in outputs]
 
-    return json.dumps({"nodes": nodes, "outputs": outputs}, indent=2)
+    return json.dumps(
+        {
+            "name": name,
+            "nodes": nodes,
+            "outputs": outputs
+        },
+        indent=2
+    )
 
 
 if __name__ == "__main__":
@@ -319,6 +326,6 @@ if __name__ == "__main__":
     out = a
     out.name = "mask"
 
-    print(network_as_json([out]))
+    print(network_as_json([out], name="Dot"))
 
     Image.fromarray(out.data * 256).show()

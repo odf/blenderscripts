@@ -1,4 +1,4 @@
-def load(path, name="Group"):
+def load(path, name=None):
     import json
     import bpy
 
@@ -7,6 +7,8 @@ def load(path, name="Group"):
         data = json.load(fp)
 
     # Grab the relevant bits of information
+    group_name = name or data["name"]
+
     nodes_in = data["nodes"]
     nodes_in_by_id = { node["id"]: node for node in nodes_in }
 
@@ -14,7 +16,7 @@ def load(path, name="Group"):
     inputs = [v["id"] for v in nodes_in if v["type"] == "Input"]
 
     # Create a new Node group
-    group = bpy.data.node_groups.new(name, "ShaderNodeTree")
+    group = bpy.data.node_groups.new(group_name, "ShaderNodeTree")
 
     # Create input/output nodes
     group_in = group.nodes.new("NodeGroupInput")

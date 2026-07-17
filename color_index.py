@@ -25,7 +25,7 @@ for i, s in enumerate(starts):
 out.name = "color_index"
 
 
-print(network_as_json([out]))
+print(network_as_json([out], name="Color Index"))
 
 from PIL import Image
 Image.fromarray(out.data * 32).show()

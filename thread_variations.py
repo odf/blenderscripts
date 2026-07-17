@@ -42,7 +42,7 @@ weft_val.name = "weft_variation"
 output_nodes=[warp_val, weft_val]
 
 
-print(network_as_json(output_nodes))
+print(network_as_json(output_nodes, name="Thread Variations"))
 
 from PIL import Image
 Image.fromarray(warp_val.data * 256).show()
