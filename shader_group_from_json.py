@@ -14,6 +14,7 @@ def load(path, name=None):
 
     outputs = data["outputs"]
     inputs = [v["id"] for v in nodes_in if v["type"] == "Input"]
+    inputs.sort()
 
     # Create a new Node group
     group = bpy.data.node_groups.new(group_name, "ShaderNodeTree")
