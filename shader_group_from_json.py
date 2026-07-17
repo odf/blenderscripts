@@ -26,13 +26,19 @@ def load(path, name="Group"):
     # Define group interface sockets
     interface = group.interface
 
-    for input in inputs:
-        name = nodes_in_by_id[input]["name"]
-        interface.new_socket(name=name, in_out="INPUT", socket_type="NodeSocketFloat")
+    for k, input in enumerate(inputs):
+        node_in = nodes_in_by_id[input]
+        name = node_in["name"]
+        socket = interface.new_socket(
+            name=name, in_out="INPUT", socket_type="NodeSocketFloat"
+        )
+        socket.default_value = node_in["value"]
 
     for output in outputs:
         name = nodes_in_by_id[output]["name"]
-        interface.new_socket(name=name, in_out="OUTPUT", socket_type="NodeSocketFloat")
+        interface.new_socket(
+            name=name, in_out="OUTPUT", socket_type="NodeSocketFloat"
+        )
 
     # Create internal nodes
     nodes_out_by_id = {}
