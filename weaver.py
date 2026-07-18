@@ -81,7 +81,7 @@ idx_weft.name = "weft_thread_index"
 thread_u = u * weft_mask + v * warp_mask
 thread_u.name = "thread_u"
 
-thread_v = v * weft_mask + (1 - u) * warp_mask
+thread_v = v * weft_mask + u * warp_mask
 thread_v.name = "thread_v"
 
 output_nodes=[
